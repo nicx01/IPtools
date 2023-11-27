@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Direccion IP aleatoria</title>
+    <link rel="shortcut icon" href="https://cdn-icons-png.flaticon.com/512/9203/9203636.png" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+            background-color: black;
+            color: white;
+        }
+
+        footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            scale: 70%;
+        }
+
+        #ipAleatoria,
+        #mascaraAleatoria,
+        #resultado {
+            font-size: 24px;
+            margin-top: 20px;
+        }
+
+        #generarIPBtn,
+        #solucionarIPBtn {
+            padding: 10px 20px;
+            border-radius: 5px;
+            background-color: white;
+            color: black;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #generarIPBtn:active,
+        #solucionarIPBtn:active {
+            background-color: #cccccc;
+        }
+    </style>
+</head>
+
+<body>
+    <pre>
+    _____                               _                  _            _ _                   _                         _____ _____             _            _             _           
+   / ____|                             | |                | |          | (_)                 (_)                       |_   _|  __ \      /\   | |          | |           (_)          
+  | |  __  ___ _ __   ___ _ __ __ _  __| | ___  _ __    __| | ___    __| |_ _ __ ___  ___ ___ _  ___  _ __   ___  ___    | | | |__) |    /  \  | | ___  __ _| |_ ___  _ __ _  __ _ ___ 
+  | | |_ |/ _ \ '_ \ / _ \ '__/ _` |/ _` |/ _ \| '__|  / _` |/ _ \  / _` | | '__/ _ \/ __/ __| |/ _ \| '_ \ / _ \/ __|   | | |  ___/    / /\ \ | |/ _ \/ _` | __/ _ \| '__| |/ _` / __|
+  | |__| |  __/ | | |  __/ | | (_| | (_| | (_) | |    | (_| |  __/ | (_| | | | |  __/ (_| (__| | (_) | | | |  __/\__ \  _| |_| |       / ____ \| |  __/ (_| | || (_) | |  | | (_| \__ \
+   \_____|\___|_| |_|\___|_|  \__,_|\__,_|\___/|_|     \__,_|\___|  \__,_|_|_|  \___|\___\___|_|\___/|_| |_|\___||___/ |_____|_|      /_/    \_\_|\___|\__,_|\__\___/|_|  |_|\__,_|___/
+                                                                                                                                                                                       
+                                                                                                                                                                                       
+</pre>
+
+    <button id="generarIPBtn" onclick="generarEjercicio()">
+        Generar dirección aleatoria
+    </button>
+
+    <div id="ipAleatoria"></div>
+    <div id="mascaraAleatoria"></div>
+
+    <button id="solucionarIPBtn" onclick="solucionarEjercicio()" style="display: none;">
+        Solucionar ejercicio
+    </button>
+
+    <div id="resultado"></div>
+
+    <footer>
+        <p>✫made by nico✫</p>
+    </footer>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script>
+        function generarEjercicio() {
+            var ip =
+                Math.floor(Math.random() * 255) +
+                1 +
+                "." +
+                Math.floor(Math.random() * 255) +
+                "." +
+                Math.floor(Math.random() * 255) +
+                "." +
+                Math.floor(Math.random() * 255);
+            var mask = Math.floor(Math.random() * 32);
+            document.getElementById("ipAleatoria").innerHTML = "Dirección: " + "<span style='color: lime;'>" + ip + "</span>";
+            document.getElementById("mascaraAleatoria").innerHTML = "Máscara: " + "<span style='color: lime;'>" + mask + "</span>";
+            $("#solucionarIPBtn").show();
+            $("#resultado").hide();
+
+        }
+        function solucionarEjercicio() {
+            var ip = document.getElementById("ipAleatoria").innerText.replace("Dirección: ", "");
+            var mask = document.getElementById("mascaraAleatoria").innerText.replace("Máscara: ", "");
+            var ipBinary = ipToBinary(ip);
+            var maskBinary = maskToBinary(mask);
+            var subredBinary = getSubRedBinary(ip, mask);
+            var subredDecimal = binaryToDecimal(subredBinary);
+            var maskDecimal = binaryToDecimal(maskBinary);
+            
+            document.getElementById("resultado").innerHTML = "<p>" + "IP binaria: " + "<span style='color: lime;'>" + ipBinary + "</span>" + "</p>" +
+                "<p>" + "Mascara binaria: " + "<span style='color: lime;'>" + maskBinary + "</span>" + "</p>" +
+                "<p>" + "Subred binaria: " + "<span style='color: lime;'>" + subredBinary + "</span>" + "</p>" +
+                "<p>" + "Mascara decimal: " + "<span style='color: lime;'>" + maskDecimal + "</span>" + "</p>" +
+                "<p>" + "Subred decimal: " + "<span style='color: lime;'>" + subredDecimal + "</span>" + "</p>";
+            $("#resultado").show();
+        }
+
+        function ipToBinary(ip) {
+            return ip.split('.').map(function (octet) {
+                return ('00000000' + parseInt(octet, 10).toString(2)).slice(-8);
+            }).join('.');
+        }
+
+        function maskToBinary(mask) {
+            const binaryString = '1'.repeat(mask) + '0'.repeat(32 - mask);
+            const octets = binaryString.match(/.{1,8}/g);
+            return octets.join('.');
+        }
+
+        function getSubRedBinary(ip, mask) {
+            const ipArray = ip.split('.').map(Number);
+            const maskArray = [];
+            let remainingBits = mask;
+
+            while (remainingBits >= 8) {
+                maskArray.push(255);
+                remainingBits -= 8;
+            }
+
+            if (remainingBits > 0) {
+                const lastByte = 256 - Math.pow(2, 8 - remainingBits);
+                maskArray.push(lastByte);
+            }
+
+            while (maskArray.length < 4) {
+                maskArray.push(0);
+            }
+
+            const subredArray = ipArray.map((octet, index) => octet & maskArray[index]);
+            return subredArray.map(octet => ('00000000' + octet.toString(2)).slice(-8)).join('.');
+        }
+
+        function binaryToDecimal(binary) {
+            const octets = binary.split('.').map(octet => parseInt(octet, 2));
+            return octets.join('.');
+        }
+    </script>
+</body>
+
+</html>
