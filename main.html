@@ -1,184 +1,38 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>IP TOOLS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="style.css">
     <link rel="shortcut icon" href="https://cdn-icons-png.flaticon.com/512/9203/9203636.png" />
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 20px;
-            background-color: black;
-            color: white;
-        }
-
-        textarea {
-            width: 300px;
-            height: 20px;
-            background-color: black;
-            color: lime;
-            border: 2px solid lime;
-            border-radius: 10px;
-            padding: 10px;
-            resize: none;
-            margin-top: 5px;
-            font-size: 150%;
-            text-align: center;
-        }
-
-        footer {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            transform: 70%;
-        }
-
-        h1 {
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 1.5em;
-            color: #ffffff;
-            text-align: center;
-            margin: 20px 0;
-            font-size: 180%;
-        }
-
-        h2 {
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 1.5em;
-            color: #ffffff;
-            text-align: center;
-            margin: 20px 0;
-            font-size: 180%;
-            margin: 10px;
-        }
-
-        #resultado {
-            font-size: 24px;
-            margin-top: 20px;
-        }
-
-        #generarIPBtn,
-        #solucionarIPBtn {
-            padding: 10px 20px;
-            border-radius: 5px;
-            background-color: white;
-            color: black;
-            border: none;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        #generarIPBtn:active,
-        #solucionarIPBtn:active {
-            background-color: #cccccc;
-        }
-    </style>
 </head>
 
 <body>
-    <h1>IP TOOLS</h1>
-    <h2>IP</h2>
-    <textarea id="inputIp" placeholder="Ingrese la dirección IP..."></textarea>
-    <br>
-    <h2>MASK</h2>
-    <textarea id="inputMask" placeholder="Ingrese la máscara..."></textarea>
-    <br>
-    <br>
-    <button id="generarIPBtn" onclick="generarEjercicio()">
-        Generar dirección aleatoria
-    </button>
+        <h1>IP TOOLS</h1>
+        <h2>IP</h2>
+        <textarea id="inputIp" placeholder="Ingrese la dirección IP..."></textarea>
+        <br>
+        <h2>MASK</h2>
+        <textarea id="inputMask" placeholder="Ingrese la máscara..."></textarea>
+        <br>
+        <br>
+        <button id="generarIPBtn" onclick="generarEjercicio()">
+            Generar dirección aleatoria
+        </button>
 
-    <button id="solucionarIPBtn" onclick="solucionarEjercicio()" style="display: none;">
-        Solucionar ejercicio
-    </button>
+        <button id="solucionarIPBtn" onclick="solucionarEjercicio()" style="display: none;">
+            Solucionar ejercicio
+        </button>
 
-    <div id="resultado"></div>
+        <div id="resultado"></div>
 
-    <footer>
-        <p>✫made by nico✫</p>
-    </footer>
-    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-    <script>
-        function generarEjercicio() {
-            var ip =
-                Math.floor(Math.random() * 255) +
-                1 +
-                "." +
-                Math.floor(Math.random() * 255) +
-                "." +
-                Math.floor(Math.random() * 255) +
-                "." +
-                Math.floor(Math.random() * 255);
-            var mask = Math.floor(Math.random() * 32);
-
-
-            document.getElementById("inputIp").value = ip;
-            document.getElementById("inputMask").value = mask;
-            $("#solucionarIPBtn").show();
-            $("#resultado").hide();
-        }
-
-        function solucionarEjercicio() {
-            var ip = document.getElementById("inputIp").value;
-            var mask = document.getElementById("inputMask").value;
-            var ipBinary = ipToBinary(ip);
-            var maskBinary = maskToBinary(mask);
-            var subredBinary = getSubRedBinary(ip, mask);
-            var subredDecimal = binaryToDecimal(subredBinary);
-            var maskDecimal = binaryToDecimal(maskBinary);
-
-            document.getElementById("resultado").innerHTML = "<p>" + "IP binaria: " + "<span style='color: lime;'>" + ipBinary + "</span>" + "</p>" +
-                "<p>" + "Mascara binaria: " + "<span style='color: lime;'>" + maskBinary + "</span>" + "</p>" +
-                "<p>" + "Subred binaria: " + "<span style='color: lime;'>" + subredBinary + "</span>" + "</p>" +
-                "<p>" + "Mascara decimal: " + "<span style='color: lime;'>" + maskDecimal + "</span>" + "</p>" +
-                "<p>" + "Subred decimal: " + "<span style='color: lime;'>" + subredDecimal + "</span>" + "</p>";
-            $("#resultado").show();
-        }
-
-        function ipToBinary(ip) {
-            return ip.split('.').map(function (octet) {
-                return ('00000000' + parseInt(octet, 10).toString(2)).slice(-8);
-            }).join('.');
-        }
-
-        function maskToBinary(mask) {
-            const binaryString = '1'.repeat(mask) + '0'.repeat(32 - mask);
-            const octets = binaryString.match(/.{1,8}/g);
-            return octets.join('.');
-        }
-
-        function getSubRedBinary(ip, mask) {
-            const ipArray = ip.split('.').map(Number);
-            const maskArray = [];
-            let remainingBits = mask;
-
-            while (remainingBits >= 8) {
-                maskArray.push(255);
-                remainingBits -= 8;
-            }
-
-            if (remainingBits > 0) {
-                const lastByte = 256 - Math.pow(2, 8 - remainingBits);
-                maskArray.push(lastByte);
-            }
-
-            while (maskArray.length < 4) {
-                maskArray.push(0);
-            }
-
-            const subredArray = ipArray.map((octet, index) => octet & maskArray[index]);
-            return subredArray.map(octet => ('00000000' + octet.toString(2)).slice(-8)).join('.');
-        }
-
-        function binaryToDecimal(binary) {
-            const octets = binary.split('.').map(octet => parseInt(octet, 2));
-            return octets.join('.');
-        }
-    </script>
-</body>
+        <footer>
+            <p>✫made by nico✫</p>
+        </footer>
+        <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+        <script src="./script.js"></script>
+    </body>
 
 </html>
