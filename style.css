@@ -55,9 +55,9 @@ h2 {
 #solucionarIPBtn {
     padding: 10px 20px;
     border-radius: 5px;
-    background-color: white;
-    color: black;
-    border: none;
+    background-color: rgb(0, 0, 0);
+    color: lime;
+    border: 2px solid lime;
     font-size: 16px;
     cursor: pointer;
     transition: background-color 0.3s ease;
