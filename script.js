@@ -13,7 +13,6 @@ function generarEjercicio() {
 
     document.getElementById("inputIp").value = ip;
     document.getElementById("inputMask").value = mask;
-    $("#solucionarIPBtn").show();
     $("#resultado").hide();
 }
 
